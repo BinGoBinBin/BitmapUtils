@@ -7,7 +7,7 @@
  *
  * @version V1.0   
  */
-package com.bingobinbin.mulThread;
+package com.umeng.bitmap.thread;
 public interface DownloadListener {
     public void onDownloadSize(int size);
     public void onStart();

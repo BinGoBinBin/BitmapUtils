@@ -1,26 +1,16 @@
-package com.bingobinbin.utils;
+package com.umeng.bitmap.utils;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.PrivateCredentialPermission;
-
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -28,28 +18,21 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.bingobinbin.mulThread.FileDownloader;
+import com.umeng.bitmap.thread.FileDownloader;
 
 public class BitmapUtils {
 
-	private static String SAVE_PATH = "/mnt/sdcard/";
+	private static String SAVE_PATH = "";
 	/** 文件夹大小限制为30M */
 	public static final int CACHE_SIZE_LIMIT = 30 * 1024 * 1024;
+	private static String FOLDER = "bitmap_cache";
+
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: getFileName
-	 *         </p>
-	 *         <p>
-	 * @Description:根据url获取图片名
-	 * 
-	 *                         </p>
-	 * 
-	 * @param url
-	 *            下载图片的url
-	 * @return
-	 * @throws
+	 * 根据url获取生成文件名。如果是本地路径，则直接返回；否则将该url地址MD5后作为文件名</br>
+	 * @param url 图片的路径
+	 * @return 图片的文件名
 	 */
 	public static String getFileName(String url) {
 		String filePath = url;
@@ -60,18 +43,10 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: getBitmapStream
-	 *         </p>
-	 *         <p>
-	 * @Description:根据url获取图片的Inputstream
-	 * 
-	 *                                    </p>
-	 * 
-	 * @param url
-	 * @return
-	 * @throws
+	 * 根据url地址获取图片本地Stream</br>
+	 * @param url 图片的地址
+	 * @return 本地图片的Stream，否则返回null
 	 */
 	public static InputStream getBitmapStream(String url) {
 		InputStream is = null;
@@ -93,18 +68,10 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: saveBitmap
-	 *         </p>
-	 *         <p>
-	 * @Description:
-	 * 
-	 *               </p>
-	 * 
+	 * 根据Bitmap跟Url地址保存图片</br>
 	 * @param url
 	 * @param mBitmap
-	 * @throws
 	 */
 	public static void saveBitmap(String url, Bitmap mBitmap) {
 		if(mBitmap == null){
@@ -128,20 +95,12 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: getScaleBitmapOptions
-	 *         </p>
-	 *         <p>
-	 * @Description: 获取图片的Option
-	 * 
-	 *               </p>
-	 * 
-	 * @param url
-	 * @param width
-	 * @param height
-	 * @return
-	 * @throws
+	 * 根据指定的宽高设置相关参数，避免出现OOM现象</br>
+	 * @param url 图片得url地址
+	 * @param width 期望图片的宽
+	 * @param height 期望图片的高
+	 * @return BitmapFactory.Options对象
 	 */
 	private static BitmapFactory.Options getScaleBitmapOptions(String url,
 			int width, int height) {
@@ -185,17 +144,9 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: closeInputStream
-	 *         </p>
-	 *         <p>
-	 * @Description:关闭 InputStream
-	 * 
-	 *                 </p>
-	 * 
-	 * @param inputStream
-	 * @throws
+	 * 关闭输入流</br>
+	 * @param inputStream 输入流
 	 */
 	private static void closeInputStream(InputStream inputStream) {
 		try {
@@ -208,17 +159,9 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: closeOutputStream
-	 *         </p>
-	 *         <p>
-	 * @Description: 关闭OutputStream
-	 * 
-	 *               </p>
-	 * 
-	 * @param outputStream
-	 * @throws
+	 * 关闭输出流</br>
+	 * @param outputStream 输出流
 	 */
 	private static void closeOutputStream(OutputStream outputStream) {
 		try {
@@ -231,23 +174,12 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: downloadBitmap
-	 *         </p>
-	 *         <p>
-	 * @Description: 根据 url重网络上获取图片
-	 * 
-	 *               </p>
-	 * 
-	 * @param url
-	 *            图片url
-	 * @param width
-	 *            图片宽
-	 * @param height
-	 *            图片高
-	 * @return
-	 * @throws
+	 * 根据图片的URL地址下载图片，并将下载的图片根据宽高缩放。注意：该方法使用单线程的方式下载图片。</br>
+	 * @param url 图片的url地址
+	 * @param width 图片的宽
+	 * @param height 图片的高
+	 * @return 图片的Bitmap对象
 	 */
 	public static Bitmap downloadBitmap(String url, int width, int height) {
 		Bitmap bitmap = null;
@@ -270,6 +202,15 @@ public class BitmapUtils {
 		return bitmap;
 	}
 
+	/**
+	 * 
+	 * 根据图片的URL地址下载图片，并将下载的图片根据宽高缩放。注意：该方法使用多线程断点续传的方式下载图片。</br>
+	 * @param context Context对象
+	 * @param url 图片的url地址
+	 * @param width 图片的宽
+	 * @param height 图片的高
+	 * @return url对应图片的Bitmap对象
+	 */
 	public static Bitmap downloadBitmap(Context context,String url,int width,int height){
     	Bitmap bitmap = null;
     	FileDownloader downloader = new FileDownloader(context, url, 3);
@@ -281,7 +222,7 @@ public class BitmapUtils {
     	
     	while( !downloader.isFinish()  ){
     		try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -292,23 +233,12 @@ public class BitmapUtils {
     }
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: getBitmapFromSDCard
-	 *         </p>
-	 *         <p>
-	 * @Description: 从SD卡上获取图片
-	 * 
-	 *               </p>
-	 * 
-	 * @param url
-	 *            图片url
-	 * @param width
-	 *            图片宽
-	 * @param height
-	 *            图片高
-	 * @return
-	 * @throws
+	 * 从SD卡上获取图片。如果不存在则返回null</br>
+	 * @param url 图片的url地址
+	 * @param width 期望图片的宽
+	 * @param height 期望图片的高
+	 * @return 代表图片的Bitmap对象
 	 */
 	public static Bitmap getBitmapFromSDCard(String url, int width, int height) {
 		InputStream inputStream = null;
@@ -326,33 +256,13 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: setSaveDirectory
-	 *         </p>
-	 *         <p>
-	 * @Description:设置缓存目录
-	 * 
-	 *                     </p>
-	 * 
-	 * @param context
-	 * @throws
+	 * 设置图片的缓存目录。根据包名来设置。</br>
+	 * @param context Context对象
 	 */
 	public static void setCacheDirectory(Context context) {
 		if (Environment.getExternalStorageState().equals(
 				Environment.MEDIA_MOUNTED) && context != null) {
-//			try {
-//				PackageInfo packageItemInfo = context.getPackageManager()
-//						.getPackageInfo(context.getPackageName(), 0);
-//				if (!TextUtils.isEmpty(packageItemInfo.packageName)) {
-//					SAVE_PATH = packageItemInfo.packageName
-//							.replace(".", "/") + "/";
-//					new File(SAVE_PATH).mkdirs();
-//				}
-//			} catch (NameNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//			
 			String packageName = context.getPackageName();
 			if(TextUtils .isEmpty(packageName)){
 				SAVE_PATH = packageName.replace(".", "/")+"/";
@@ -362,23 +272,15 @@ public class BitmapUtils {
 				}
 			}
 		} else {
-			SAVE_PATH = "/data/data/";
+			SAVE_PATH = Environment.getDataDirectory().getAbsolutePath();
 		}
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: getDirSize
-	 *         </p>
-	 *         <p>
-	 * @Description:获取缓存目录的容量
-	 * 
-	 *                        </p>
-	 * 
-	 * @param file
-	 * @return
-	 * @throws
+	 * 获取目录下所有文件的大小</br>
+	 * @param file 目录文件
+	 * @return 该目录下所有文件的大小
 	 */
 	private static long getDirSize(File file) {
 		long total = 0;
@@ -395,15 +297,9 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: checkStorageAvailable
-	 *         </p>
-	 *         <p>
-	 * @Description:检查存储空间是否足够 </p>
-	 * 
+	 * 检查存在目录下文件是否超过默认大小，默认值为30M。如果超过则会删除30%的文件，删除策略采用LRU算法</br>
 	 * @param bitmapSize
-	 * @throws
 	 */
 	private static void checkStorageAvailable(long bitmapSize) {
 		long dirSize = getDirSize(new File(SAVE_PATH));
@@ -425,16 +321,10 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * <p>
 	 * 
-	 * @Title: getFilePathAndModyTime
-	 *         </p>
-	 *         <p>
-	 * @Description:获取文件绝对路径跟修改时间 </p>
-	 * 
-	 * @param file
-	 * @return
-	 * @throws
+	 * 获取该目录下文件的修改时间</br>
+	 * @param file 目录文件
+	 * @return Map对象，存储该目录下所有文件的最后修改时间
 	 */
 	private static Map<Long, String> getFilePathAndModyTime(File file) {
 		Map<Long, String> map = new HashMap<Long, String>();
@@ -446,5 +336,31 @@ public class BitmapUtils {
 			}
 		}
 		return map;
+	}
+	
+	/**
+	 * 
+	 * 设置缓存目录</br>
+	 * @param directory 目录名称
+	 */
+	public static void setBitmapCacheDir(String directory){
+	    if ( !TextUtils.isEmpty(directory) ) {
+	        FOLDER = directory;
+	    }
+	       // 判断sd卡是否存在
+        boolean sdCardExist = Environment.getExternalStorageState().equals(
+                android.os.Environment.MEDIA_MOUNTED);
+        if (sdCardExist) {
+            SAVE_PATH = Environment.getExternalStorageDirectory().getPath()
+                    + File.separator + FOLDER + File.separator;
+
+        } else {
+            SAVE_PATH = Environment.getDataDirectory().getPath() + File.separator
+                    + FOLDER + File.separator;
+        }
+        File file = new File(SAVE_PATH);
+        if (!file.exists()) {
+            file.mkdir();
+        }
 	}
 }

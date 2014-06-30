@@ -8,7 +8,7 @@
  * @author Honghui He  
  * @version V1.0   
  */
-package com.bingobinbin.mulThread;
+package com.umeng.bitmap.thread;
 /** 
  * @author liubin 
  * @date：Sep 17, 2013 4:23:45 PM  
@@ -20,7 +20,7 @@ import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.bingobinbin.utils.BitmapUtils;
+import com.umeng.bitmap.utils.BitmapUtils;
 
 public class MulThreadDownload {
 

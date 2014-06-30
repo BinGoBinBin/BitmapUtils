@@ -8,11 +8,11 @@
  * @author Honghui He  
  * @version V1.0   
  */
-package com.bingobinbin.mulThread;
+package com.umeng.bitmap.thread;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.bingobinbin.db.DBOpenHelper;
+import com.umeng.bitmap.db.DBOpenHelper;
 
 import android.content.Context;
 import android.database.Cursor;

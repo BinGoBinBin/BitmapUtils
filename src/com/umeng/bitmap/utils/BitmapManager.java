@@ -1,4 +1,4 @@
-package com.bingobinbin.utils;
+package com.umeng.bitmap.utils;
 
 import java.lang.ref.SoftReference;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public class BitmapManager {
 							holder.mImageView.setImageBitmap(holder.mBitmap);
 							cache.put(Helper.md5(holder.url), new SoftReference<Bitmap>(holder.mBitmap));
 							// 向SD卡中写入图片缓存
-//							BitmapUtils.saveBitmap(holder.url, holder.mBitmap);
+							BitmapUtils.saveBitmap(holder.url, holder.mBitmap);
 							
 						}
 					}
@@ -71,16 +71,14 @@ public class BitmapManager {
 		this.mContext = context;
 		init(mContext);
 	}
-
+	
 	/**
-	 * <p>@Title: loadBitmap</p>
-	 * <p>@Description:根据图片的宽高加载图片资源 
-	 * </p> 
-	 * @param url 图片url
-	 * @param width 图片宽
-	 * @param height 图片高
-	 * @return  返回图片
-	 * @throws
+	 * 
+	 * 加载图片。获取获取顺序为：缓存 - SD卡 - 网络下载</br>
+	 * @param url 图片的url地址
+	 * @param width 期望图片的宽
+	 * @param height 期望图片的高
+	 * @return 图片对应的Bitmap对象
 	 */
 	public Bitmap loadBitmap(String url, int width, int height) {
 		if (TextUtils.isEmpty(url)) {
@@ -103,25 +101,25 @@ public class BitmapManager {
 		bitmap = downloadBitmap(url, width, height);
 		if (bitmap != null) {
 			cache.put(Helper.md5(url), new SoftReference<Bitmap>(bitmap));
-//			BitmapUtils.saveBitmap(url, bitmap);
+			BitmapUtils.saveBitmap(url, bitmap);
 		}
 		return bitmap;
 	}
 
 	/**
-	 * 设置默认图片
+	 * 设置默认图片。该图片在加载图片时显示，加载完成后显示目标图片
 	 * 
-	 * @param bmp
+	 * @param bmp 木人图片
 	 */
 	public void setDefaultBmp(Bitmap bmp) {
 		defaultBmp = bmp;
 	}
 
 	/**
-	 * 加载图片
+	 * 加载图片，加载完成后设置给对于的ImageView对象并显示
 	 * 
-	 * @param url
-	 * @param imageView
+	 * @param url 图片的url地址
+	 * @param imageView 需要显示该图片的ImageView对象
 	 */
 	public void loadBitmap(String url, ImageView imageView) {
 		loadBitmap(url, imageView, this.defaultBmp, screen[0], screen[1]);
@@ -162,20 +160,12 @@ public class BitmapManager {
 	}
 
 	/**
-	 * <p>
-	 * @Title: getBitmapFromCache
-	 * </p>
-	 * <p>
-	 * @Description:从缓存中获取图片
-	 * </p>
-	 * @param url
-	 *            图片的URL
-	 * @param width
-	 *            图片宽
-	 * @param height
-	 *            图片高
-	 * @return Bitmap
-	 * @throws
+	 * 
+	 * 从缓存中获取图片</br>
+	 * @param url 图片的url地址
+	 * @param width 期望图片的宽
+	 * @param height 期望图片的高
+	 * @return 图片对于的Bitmap对象
 	 */
 	private Bitmap getBitmapFromCache(String url, int width, int height) {
 		Bitmap bitmap = null;
@@ -218,44 +208,30 @@ public class BitmapManager {
 	}
 
 	/**
-	 * <p>
-	 * @Title: downloadBitmap
-	 * </p>
-	 * <p>
-	 * @Description: 从网络上获取图片
 	 * 
-	 * </p>
-	 * 
-	 * @param url
-	 *            图片url
-	 * @param width
-	 *            图片宽
-	 * @param height
-	 *            图片高
-	 * @return
-	 * @throws
+	 * 根据图片的url地址下载图片</br>
+	 * @param url 图片的url地址
+	 * @param width 图片的宽
+	 * @param height 图片的高
+	 * @return 图片对于的Bitmap对象
 	 */
 	private Bitmap downloadBitmap(String url, int width, int height) {
-//		return BitmapUtils.downloadBitmap(url, width, height);
 		return BitmapUtils.downloadBitmap(mContext,url, width, height);
 	}
 
 	/**
-	 * <p>@Title: init</p>
-	 * <p>@Description:初始化缓存相关的资源 
-	 *
-	 * </p> 
-	 * @param context      
-	 * @throws
+	 * 
+	 * 初始化相关参数。比如：获取手机屏幕的宽高，默认根据包名设置图片的缓存路径</br>
+	 * @param context
 	 */
 	private static void init(Context context) {
 		screen = Helper.getScreenWidthHeight(context);
-		BitmapUtils.setCacheDirectory(context);
+		String packageName = context.getPackageName();
+		BitmapUtils.setBitmapCacheDir(packageName);
 	}
+
 	/**
-	 * <p>@ClassName: Holder</p>
-	 * <p>@Description:存储异步加载的相关数据
-	 * </p> 
+	 * 一个简单的容器，保存相关的参数
 	 */
 	private class Holder{
 		Bitmap mBitmap;

@@ -1,3 +1,4 @@
+package com.umeng.bitmap.utils;
 //package com.bingobinbin.utils;
 //
 //import java.io.ByteArrayOutputStream;

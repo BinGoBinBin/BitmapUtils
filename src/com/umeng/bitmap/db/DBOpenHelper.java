@@ -8,7 +8,7 @@
  * @author Honghui He  
  * @version V1.0   
  */
-package com.bingobinbin.db;
+package com.umeng.bitmap.db;
 /** 
  * @author liubin 
  * @date：Sep 17, 2013 4:24:43 PM  

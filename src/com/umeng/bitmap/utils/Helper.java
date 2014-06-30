@@ -1,4 +1,4 @@
-package com.bingobinbin.utils;
+package com.umeng.bitmap.utils;
 
 import java.security.MessageDigest;
 import java.text.DateFormat;

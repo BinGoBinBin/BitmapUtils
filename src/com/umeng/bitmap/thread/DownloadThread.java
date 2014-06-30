@@ -7,7 +7,7 @@
  *
  * @version V1.0   
  */
-package com.bingobinbin.mulThread;
+package com.umeng.bitmap.thread;
 
 import java.io.File;
 import java.io.InputStream;
@@ -15,15 +15,8 @@ import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/** 
- * @author liubin 
- * @date：Sep 17, 2013 5:53:01 PM  
- */
-/**<p>@ClassName: DownloadThread</p>
- * <p>@Description:
- *
- * </p> 
- * 
+/**
+ * 下载在类
  */
 public class DownloadThread extends Thread {
     private File saveFile;
