@@ -116,7 +116,7 @@ public class BitmapManager {
 	/**
 	 * 设置默认图片。该图片在加载图片时显示，加载完成后显示目标图片
 	 * 
-	 * @param bmp 木人图片
+	 * @param bmp 默认图片
 	 */
 	public void setDefaultBmp(Bitmap bmp) {
 		defaultBmp = bmp;
@@ -175,10 +175,11 @@ public class BitmapManager {
 	 * @return 图片对于的Bitmap对象
 	 */
 	private Bitmap getBitmapFromCache(String url, int width, int height) {
+	    String cacheKey = Helper.md5(url);
 		Bitmap bitmap = null;
 		// 从内存中获取
-		if (cache.containsKey(Helper.md5(url))) {
-			bitmap = cache.get(Helper.md5(url)).get();
+		if (cache.containsKey(cacheKey)) {
+			bitmap = cache.get(cacheKey).get();
 			if (bitmap != null) {
 				return bitmap;
 			}
@@ -186,7 +187,7 @@ public class BitmapManager {
 		// 从SD卡上获取
 		bitmap = BitmapUtils.getBitmapFromSDCard(url, width, height);
 		if (bitmap != null) {
-			cache.put(Helper.md5(url), new SoftReference<Bitmap>(bitmap));
+			cache.put(cacheKey, new SoftReference<Bitmap>(bitmap));
 		}
 		return bitmap;
 	}
