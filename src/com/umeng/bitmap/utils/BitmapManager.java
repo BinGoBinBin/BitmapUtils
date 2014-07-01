@@ -1,9 +1,13 @@
 package com.umeng.bitmap.utils;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +19,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.widget.ImageView;
+
+import com.umeng.bitmap.thread.DownloadListener;
 
 public class BitmapManager {
 
@@ -28,6 +34,7 @@ public class BitmapManager {
 	private static final int BITMAP_RESERSH = 0x01;
 	//仅仅加载图片
 	private static final int BITMAP_LOAD = 0x02;
+	
 	@SuppressLint("HandlerLeak")
 	final Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -216,9 +223,21 @@ public class BitmapManager {
 	 * @return 图片对于的Bitmap对象
 	 */
 	private Bitmap downloadBitmap(String url, int width, int height) {
-		return BitmapUtils.downloadBitmap(mContext,url, width, height);
+		return BitmapUtils.downloadBitmap(mContext,url, width, height,null);
 	}
 
+	/**
+     * 
+     * 根据图片的url地址下载图片</br>
+     * @param url 图片的url地址
+     * @param width 图片的宽
+     * @param height 图片的高
+     * @return 图片对于的Bitmap对象
+     */
+    private Bitmap downloadBitmap(String url, int width, int height,DownloadListener listener) {
+        return BitmapUtils.downloadBitmap(mContext,url, width, height,listener);
+    }
+    
 	/**
 	 * 
 	 * 初始化相关参数。比如：获取手机屏幕的宽高，默认根据包名设置图片的缓存路径</br>
@@ -244,4 +263,75 @@ public class BitmapManager {
 			this.mImageView = mImageView;
 		}
 	}
+	
+	/**
+	 *
+	 * 根据图片列表加载图片</br>
+	 */
+	public void preDownloadImage(){
+	    BitmapConfig config = BitmapConfig.getInstance();
+	    List<String> invalidUrls = new ArrayList<String>();
+	    if ( config.getWifiAvaliable(mContext) ) {
+	        Set<String> lists = config.getDownloadList();
+	        Iterator<String> iterator = lists.iterator();
+	        String url = null;
+	        while ( iterator.hasNext() ) {
+                url = iterator.next();
+                if ( BitmapUtils.isExist(url) ) {
+                    continue;
+                }
+                Task task = new Task(url);
+                task.execute();
+                while (!task.isFinish) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                if ( task.isFinish) {
+                    invalidUrls.add(url);
+                }
+            }
+	        config.removeDownloadedList(invalidUrls);
+	    }
+	}
+	
+	class Task{
+	    public boolean isFinish = false;
+	    String url = null;
+	    
+	    Task(String url){
+	        this.url = url;
+	    }
+	    
+	    void execute(){
+	        downloadBitmap(url, -1, -1,new DownloadListener() {
+	            
+	            @Override
+	            public void onStart() {
+	            }
+	            
+	            @Override
+	            public void onError() {
+	                setStatus();
+	            }
+	            
+	            @Override
+	            public void onDownloadSize(int size) {
+	            }
+	            
+	            @Override
+	            public void onComplete(String filePath) {
+	                setStatus();
+	            }
+	        });
+	    }
+	    
+	    public void setStatus(){
+	        isFinish = true;
+	    }
+	    
+	}
+	
+	
 }

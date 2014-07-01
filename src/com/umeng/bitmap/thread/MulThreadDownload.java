@@ -74,7 +74,6 @@ public class MulThreadDownload {
 				}
 				rfile.close();
 				inputStream.close();
-				System.out.println("线程"+ (threaid+1)+ "下载完成");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

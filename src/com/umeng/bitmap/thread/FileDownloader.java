@@ -139,7 +139,7 @@ public class FileDownloader {
                     }
                 }
             } else {
-                throw new RuntimeException("server no response ");
+                throw new Exception("server no response ");
             }
         } catch (Exception e) {
             e.printStackTrace();
