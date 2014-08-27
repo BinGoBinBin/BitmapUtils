@@ -1,13 +1,3 @@
-/**   
- * @Copyright: Umeng.com, Ltd. Copyright 2011-2015, All rights reserved 
- *
- * @Title: MulThreadDownload.java
- * @Package com.bingobinbin.mulThread
- * @Description: 
- *
- * @author Honghui He  
- * @version V1.0   
- */
 package com.umeng.bitmap.thread;
 /** 
  * @author liubin 
@@ -31,7 +21,7 @@ public class MulThreadDownload {
 		conn.setRequestMethod("GET");
 		conn.setConnectTimeout(10*1000);
 		int length = conn.getContentLength();//得到文件的长度
-		int threadnum = 5;
+		int threadnum = 3;//线程数
 		int block = length%threadnum==0 ? length/threadnum : length/threadnum+1;//计算每条线程下载的数据长度
 		File file = new File(BitmapUtils.getFileName(path));
 		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
@@ -62,7 +52,7 @@ public class MulThreadDownload {
 				int endpos = (threaid+1) * block - 1;//计算该线程下载到文件的什么位置结束
 				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 				conn.setRequestMethod("GET");
-				conn.setConnectTimeout(5*1000);
+				conn.setConnectTimeout(15*1000);
 				conn.setRequestProperty("Range", "bytes="+ startpos+"-"+ endpos);
 				InputStream inputStream = conn.getInputStream();
 				RandomAccessFile rfile = new RandomAccessFile(file, "rwd");

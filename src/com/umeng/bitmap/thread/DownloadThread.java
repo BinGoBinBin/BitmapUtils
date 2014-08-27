@@ -43,7 +43,7 @@ public class DownloadThread extends Thread {
         if(downLength < block){//未下载完成
             try {
                 HttpURLConnection http = (HttpURLConnection) downUrl.openConnection();
-                http.setConnectTimeout(5 * 1000);
+                http.setConnectTimeout(20 * 1000);
                 http.setRequestMethod("GET");
                 http.setRequestProperty("Accept", "image/gif, image/jpeg, image/pjpeg, image/pjpeg, application/x-shockwave-flash, application/xaml+xml, application/vnd.ms-xpsdocument, application/x-ms-xbap, application/x-ms-application, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, */*");
                 http.setRequestProperty("Accept-Language", "zh-CN");

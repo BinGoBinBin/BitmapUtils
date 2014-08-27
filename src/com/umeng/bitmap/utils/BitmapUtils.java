@@ -27,7 +27,7 @@ public class BitmapUtils {
     private static String SAVE_PATH = "";
     /** 文件夹大小限制为30M */
     public static final int CACHE_SIZE_LIMIT = 30 * 1024 * 1024;
-    private static String FOLDER = "bitmap_cache";
+    private static String FOLDER = "heyhey";
 
     /**
      * 根据url获取生成文件名。如果是本地路径，则直接返回；否则将该url地址MD5后作为文件名</br>
@@ -237,7 +237,7 @@ public class BitmapUtils {
 
         while (!downloader.isFinish()) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -272,27 +272,6 @@ public class BitmapUtils {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * 设置图片的缓存目录。根据包名来设置。</br>
-     * 
-     * @param context Context对象
-     */
-    public static void setCacheDirectory(Context context) {
-        if (Environment.getExternalStorageState().equals(
-                Environment.MEDIA_MOUNTED) && context != null) {
-            String packageName = context.getPackageName();
-            if (TextUtils.isEmpty(packageName)) {
-                SAVE_PATH = packageName.replace(".", "/") + "/";
-                File file = new File(SAVE_PATH);
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-            }
-        } else {
-            SAVE_PATH = Environment.getDataDirectory().getAbsolutePath();
-        }
     }
 
     /**
@@ -379,7 +358,7 @@ public class BitmapUtils {
         }
         File file = new File(SAVE_PATH);
         if (!file.exists()) {
-            file.mkdir();
+            file.mkdirs();
         }
     }
     
@@ -396,6 +375,29 @@ public class BitmapUtils {
             return true;
         }
         return false;
+    }
+    
+    public static long getCacheSize(){
+        File root = new File(SAVE_PATH);
+        return getDirSize(root);
+    }
+    
+    private static void  deleteCacheFile(File file){
+        if ( file.isFile() ) {
+            file.delete();
+        } else {
+            File[] files = file.listFiles();
+            for ( File f : files ) {
+                deleteCacheFile(f);
+            }
+        }
+    }
+    
+    public static boolean cleanCache(){
+        File root = new File(SAVE_PATH);
+        deleteCacheFile(root);
+        long size = getDirSize(root);        
+        return size == 0;
     }
     
 }
